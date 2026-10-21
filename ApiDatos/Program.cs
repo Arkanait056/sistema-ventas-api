@@ -123,7 +123,6 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    // En el contenedor solo hay HTTP (8080); en Development evitamos la advertencia
     app.UseHttpsRedirection();
 }
 

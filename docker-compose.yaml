@@ -1,0 +1,38 @@
+services:
+  sqlserver-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver_db
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${SA_PASSWORD}
+    ports:
+      - "1434:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q \"SELECT 1\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  web-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ventas_api
+    ports:
+      - "5000:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Server=sqlserver-db;Database=SistemaVentasDb;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True"
+      Jwt__Key: ${JWT_KEY}
+      Jwt__Issuer: ${JWT_ISSUER:-ventas-api}
+      Jwt__Audience: ${JWT_AUDIENCE:-ventas-clientes}
+      AllowedOrigins: ${ALLOWED_ORIGINS:-http://localhost:4200}
+    depends_on:
+      sqlserver-db:
+        condition: service_healthy
+
+volumes:
+  sqlserver_data:

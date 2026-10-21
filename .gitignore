@@ -1,0 +1,21 @@
+# Secretos: nunca subir el .env real
+.env
+.env.*
+!.env.example
+**/appsettings.*.local.json
+
+# Compilación .NET
+bin/
+obj/
+publish/
+
+# Visual Studio / VS Code / Rider
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Sistema operativo
+Thumbs.db
+.DS_Store

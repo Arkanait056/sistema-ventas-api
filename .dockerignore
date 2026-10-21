@@ -1,0 +1,21 @@
+# Control de versiones e IDE
+.git
+.gitignore
+.vs
+.vscode
+.idea
+
+# Compilación local (se recompila dentro de Docker)
+**/bin
+**/obj
+
+# Secretos y configuración local
+.env
+.env.*
+**/appsettings.*.local.json
+
+# Archivos que no hacen falta en la imagen
+docker-compose*.yml
+Dockerfile
+README.md
+*.md

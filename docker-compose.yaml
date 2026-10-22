@@ -4,7 +4,7 @@ services:
     container_name: sqlserver_db
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: ${SA_PASSWORD}
+      MSSQL_SA_PASSWORD: ${SA_PASSWORD:?Define SA_PASSWORD en .env}
     ports:
       - "1434:1433"
     volumes:
@@ -26,10 +26,12 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: "Server=sqlserver-db;Database=SistemaVentasDb;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True"
-      Jwt__Key: ${JWT_KEY}
+      Jwt__Key: ${JWT_KEY:?Define JWT_KEY en .env}
       Jwt__Issuer: ${JWT_ISSUER:-ventas-api}
       Jwt__Audience: ${JWT_AUDIENCE:-ventas-clientes}
       AllowedOrigins: ${ALLOWED_ORIGINS:-http://localhost:4200}
+      AdminSeed__Email: ${ADMIN_EMAIL:?Define ADMIN_EMAIL en .env}
+      AdminSeed__Password: ${ADMIN_PASSWORD:?Define ADMIN_PASSWORD en .env}
     depends_on:
       sqlserver-db:
         condition: service_healthy

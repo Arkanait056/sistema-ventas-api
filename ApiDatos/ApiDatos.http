@@ -1,23 +1,24 @@
 @host = http://localhost:5000
 
-### Registrar usuario
-POST {{host}}/api/auth/registrar
-Content-Type: application/json
-
-{
-  "email": "admin@ejemplo.com",
-  "password": "Admin123",
-  "nombreCompleto": "Admin Demo",
-  "rol": "Admin"
-}
-
-### Login (copia el token de la respuesta)
+### Login (usa el ADMIN_EMAIL y ADMIN_PASSWORD de tu .env; copia el token de la respuesta)
 POST {{host}}/api/auth/login
 Content-Type: application/json
 
 {
   "email": "admin@ejemplo.com",
-  "password": "Admin123"
+  "password": "CambiaEstaClave123"
+}
+
+### Registrar usuario (solo Admin: pega tu token después de Bearer)
+POST {{host}}/api/auth/registrar
+Authorization: Bearer PEGA_AQUI_TU_TOKEN
+Content-Type: application/json
+
+{
+  "email": "analista@ejemplo.com",
+  "password": "Analista123",
+  "nombreCompleto": "Analista Demo",
+  "rol": "Analista"
 }
 
 ### Listar productos (pega tu token después de Bearer)

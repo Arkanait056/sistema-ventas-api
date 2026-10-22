@@ -18,16 +18,16 @@ API REST para gestión de ventas, productos e inventario, con autenticación JWT
 Requisitos: [Docker Desktop](https://www.docker.com/products/docker-desktop/).
 
 1. Clona el repositorio.
-2. Copia `.env.example` como `.env` y ajusta los valores (`SA_PASSWORD` y `JWT_KEY`).
+2. Copia `.env.example` como `.env` y ajusta los valores (`SA_PASSWORD`, `JWT_KEY`, `ADMIN_EMAIL` y `ADMIN_PASSWORD`).
 3. Levanta todo:
 
-   ```bash
+```bash
    docker compose up --build
-   ```
+```
 
 4. Abre Swagger en <http://localhost:5000/swagger>.
 
-La base de datos `SistemaVentasDb` se crea sola, se aplican las migraciones y se crean los roles iniciales (`Admin` y `Analista`).
+La base de datos `SistemaVentasDb` se crea sola, se aplican las migraciones, se crean los roles iniciales (`Admin` y `Analista`) y el primer usuario Admin con las credenciales de tu `.env`.
 
 Para detener: `docker compose down` (conserva los datos). Para empezar de cero: `docker compose down -v`.
 
@@ -35,9 +35,9 @@ Para detener: `docker compose down` (conserva los datos). Para empezar de cero: 
 
 La API usa tokens JWT:
 
-1. Crea un usuario con `POST /api/auth/registrar`.
-2. Inicia sesión con `POST /api/auth/login` y copia el token de la respuesta.
-3. Envía el token en el header `Authorization: Bearer <token>` (en Swagger, con el botón **Authorize**).
+1. Inicia sesión con `POST /api/auth/login` usando el `ADMIN_EMAIL` y `ADMIN_PASSWORD` de tu `.env`, y copia el token de la respuesta.
+2. Envía el token en el header `Authorization: Bearer <token>` (en Swagger, con el botón **Authorize**).
+3. Con ese Admin, crea más usuarios (`Admin` o `Analista`) con `POST /api/auth/registrar`.
 
 Hay dos roles: **Admin** (acceso total) y **Analista** (lectura de productos, ventas y reportes; puede registrar ventas).
 
@@ -45,7 +45,7 @@ Hay dos roles: **Admin** (acceso total) y **Analista** (lectura de productos, ve
 
 | Método | Ruta | Descripción | Acceso |
 |---|---|---|---|
-| POST | `/api/auth/registrar` | Registra un usuario con rol `Admin` o `Analista` | Público |
+| POST | `/api/auth/registrar` | Registra un usuario con rol `Admin` o `Analista` | Admin |
 | POST | `/api/auth/login` | Devuelve un token JWT (válido 2 horas) | Público |
 | GET | `/api/auth/whoami` | Muestra los claims del token actual | Autenticado |
 | GET | `/api/productos` | Lista los productos | Admin, Analista |
@@ -77,13 +77,12 @@ En `ApiDatos/ApiDatos.http` hay ejemplos de peticiones listos para probar (con l
 
 ## Estado del proyecto
 
-## Estado del proyecto
-
 En desarrollo.
 
 **Implementado**
 
 - [x] Autenticación JWT con roles (`Admin` y `Analista`)
+- [x] Registro de usuarios restringido a Admin (el primer Admin se crea al iniciar)
 - [x] CRUD de productos con control de acceso por rol
 - [x] Registro de ventas transaccional con validación de stock
 - [x] Reportes de ingresos y productos más vendidos
@@ -92,6 +91,7 @@ En desarrollo.
 
 **Próximos pasos**
 
+- [ ] Despliegue en Kubernetes (manifiestos en `k8s/`)
 - [ ] Pruebas unitarias y de integración
 - [ ] DTOs en los endpoints de productos
 - [ ] Paginación y filtros en los listados

@@ -77,11 +77,21 @@ En `ApiDatos/ApiDatos.http` hay ejemplos de peticiones listos para probar (con l
 
 ## Estado del proyecto
 
-En desarrollo. Próximos pasos:
+## Estado del proyecto
 
-- [ ] Restringir el registro de usuarios `Admin` (hoy el registro es público)
-- [ ] Usar DTOs en los endpoints de productos
+En desarrollo.
+
+**Implementado**
+
+- [x] Autenticación JWT con roles (`Admin` y `Analista`)
+- [x] CRUD de productos con control de acceso por rol
+- [x] Registro de ventas transaccional con validación de stock
+- [x] Reportes de ingresos y productos más vendidos
+- [x] Importación masiva de productos desde CSV/JSON
+- [x] Docker Compose con migraciones automáticas
+
+**Próximos pasos**
+
 - [ ] Pruebas unitarias y de integración
+- [ ] DTOs en los endpoints de productos
 - [ ] Paginación y filtros en los listados
-- [ ] Frontend en Angular
-- [ ] Pipeline de CI con GitHub Actions

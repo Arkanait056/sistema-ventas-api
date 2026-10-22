@@ -1,8 +1,8 @@
 using ApiDatos.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -19,13 +19,13 @@ public class AuthController : ControllerBase
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IConfiguration _config;
 
-    public AuthController (UserManager<ApplicationUser> userManager, IConfiguration config)
+    public AuthController(UserManager<ApplicationUser> userManager, IConfiguration config)
     {
         _userManager = userManager;
         _config = config;
     }
-    
-     [HttpGet("whoami")]
+
+    [HttpGet("whoami")]
     [Authorize]
     public IActionResult WhoAmI()
     {
@@ -33,10 +33,13 @@ public class AuthController : ControllerBase
         return Ok(claims);
     }
 
+    // Solo un Admin autenticado puede crear usuarios (Admin o Analista).
+    // El primer Admin se crea al arrancar la app (ver Program.cs).
     [HttpPost("registrar")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Registrar(RegistrarDto dto)
     {
-       if (dto.Rol != "Admin" && dto.Rol != "Analista")
+        if (dto.Rol != "Admin" && dto.Rol != "Analista")
         {
             return BadRequest("Rol inválido. Debe ser 'Admin' o 'Analista'.");
         }
@@ -61,7 +64,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult > Login(LoginDto dto)
+    public async Task<IActionResult> Login(LoginDto dto)
     {
         var usuario = await _userManager.FindByEmailAsync(dto.Email);
 
@@ -74,15 +77,12 @@ public class AuthController : ControllerBase
         var token = GenerarToken(usuario, roles);
 
         return Ok(new { Token = token });
-        
     }
 
     private string GenerarToken(ApplicationUser usuario, IList<string> roles)
     {
-        
         var claims = new List<Claim>
         {
-            
             new Claim(ClaimTypes.NameIdentifier, usuario.Id),
             new Claim(ClaimTypes.Email, usuario.Email!),
             new Claim("NombreCompleto", usuario.NombreCompleto)
@@ -107,5 +107,3 @@ public class AuthController : ControllerBase
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
-
-

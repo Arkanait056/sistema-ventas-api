@@ -114,6 +114,31 @@ using (var scope = app.Services.CreateScope())
         if (!await roleManager.RoleExistsAsync(rol))
             await roleManager.CreateAsync(new IdentityRole(rol));
     }
+
+    // 3) Primer Admin: se crea solo si defines AdminSeed__Email y AdminSeed__Password.
+    //    Es la única forma de tener un Admin sin pasar por el endpoint protegido de registro.
+    var adminEmail = app.Configuration["AdminSeed:Email"];
+    var adminPassword = app.Configuration["AdminSeed:Password"];
+    if (!string.IsNullOrWhiteSpace(adminEmail) && !string.IsNullOrWhiteSpace(adminPassword))
+    {
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        if (await userManager.FindByEmailAsync(adminEmail) == null)
+        {
+            var admin = new ApplicationUser
+            {
+                UserName = adminEmail,
+                Email = adminEmail,
+                NombreCompleto = "Administrador"
+            };
+
+            var resultado = await userManager.CreateAsync(admin, adminPassword);
+            if (resultado.Succeeded)
+                await userManager.AddToRoleAsync(admin, "Admin");
+            else
+                Console.WriteLine("No se pudo crear el Admin inicial: " +
+                    string.Join("; ", resultado.Errors.Select(e => e.Description)));
+        }
+    }
 }
 
 if (app.Environment.IsDevelopment())
@@ -123,6 +148,7 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
+    // En el contenedor solo hay HTTP (8080); en Development evitamos la advertencia
     app.UseHttpsRedirection();
 }
 

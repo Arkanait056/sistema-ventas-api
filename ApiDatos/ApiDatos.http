@@ -1,6 +1,54 @@
-@ApiDatos_HostAddress = http://localhost:5224
+@host = http://localhost:5000
 
-GET {{ApiDatos_HostAddress}}/weatherforecast/
-Accept: application/json
+### Registrar usuario
+POST {{host}}/api/auth/registrar
+Content-Type: application/json
 
-###
+{
+  "email": "admin@ejemplo.com",
+  "password": "Admin123",
+  "nombreCompleto": "Admin Demo",
+  "rol": "Admin"
+}
+
+### Login (copia el token de la respuesta)
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@ejemplo.com",
+  "password": "Admin123"
+}
+
+### Listar productos (pega tu token después de Bearer)
+GET {{host}}/api/productos
+Authorization: Bearer PEGA_AQUI_TU_TOKEN
+
+### Crear producto
+POST {{host}}/api/productos
+Authorization: Bearer PEGA_AQUI_TU_TOKEN
+Content-Type: application/json
+
+{
+  "nombre": "Teclado mecánico",
+  "sku": "TEC-001",
+  "precioCosto": 25.00,
+  "precioVenta": 45.00,
+  "stockActual": 50,
+  "stockMinimo": 5
+}
+
+### Registrar venta
+POST {{host}}/api/ventas
+Authorization: Bearer PEGA_AQUI_TU_TOKEN
+Content-Type: application/json
+
+{
+  "detalles": [
+    { "productoId": 1, "cantidad": 2 }
+  ]
+}
+
+### Reporte de ingresos por mes
+GET {{host}}/api/reportes/ingresos?agrupar=mes
+Authorization: Bearer PEGA_AQUI_TU_TOKEN
